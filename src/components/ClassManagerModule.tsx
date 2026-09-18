@@ -25,7 +25,8 @@ import {
   BookOpen,
   FileSpreadsheet,
   Upload,
-  RefreshCw
+  RefreshCw,
+  UserCheck
 } from 'lucide-react';
 import { SchoolClass, Student, SchoolTenant, SchoolUserAccount } from '../types';
 import { generateClassStudentsListPDF } from '../utils/pdfGenerator';
@@ -86,6 +87,16 @@ export default function ClassManagerModule({
   const [classNameInput, setClassNameInput] = useState('');
   const [classLevelInput, setClassLevelInput] = useState('Premier Cycle (6e - 3e)');
   const [classStreamInput, setClassStreamInput] = useState('Général');
+  const [classTeacherIdInput, setClassTeacherIdInput] = useState<string>('');
+
+  // Quick Teacher Assignment Modal & State
+  const [assigningTeacherClass, setAssigningTeacherClass] = useState<SchoolClass | null>(null);
+  const [quickTeacherSelectId, setQuickTeacherSelectId] = useState<string>('');
+
+  // Registered Teachers for the current school
+  const registeredTeachers = (userAccounts || []).filter(u => 
+    u.role === 'ENSEIGNANT' && (!activeSchoolId || !u.schoolId || u.schoolId === activeSchoolId)
+  );
 
   // Student management modal & state
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -365,6 +376,8 @@ export default function ClassManagerModule({
     }
 
     const cleanName = classNameInput.trim();
+    const assignedTeacher = registeredTeachers.find(t => t.id === classTeacherIdInput);
+    const assignedTeacherName = assignedTeacher ? assignedTeacher.fullName : undefined;
 
     if (editingClassId) {
       // Edit
@@ -374,12 +387,28 @@ export default function ClassManagerModule({
             ...c,
             name: cleanName,
             level: classLevelInput,
-            stream: classStreamInput
+            stream: classStreamInput,
+            mainTeacherId: classTeacherIdInput || undefined,
+            mainTeacherName: assignedTeacherName
           };
         }
         return c;
       }));
-      addAuditLog?.("Modification de classe", activeSchoolId, `Modification de la classe "${cleanName}".`);
+
+      // Synchronize teacher account's assignedClasses array if setUserAccounts exists
+      if (setUserAccounts && classTeacherIdInput) {
+        setUserAccounts(prev => prev.map(u => {
+          if (u.id === classTeacherIdInput) {
+            const existingAssigned = u.assignedClasses || [];
+            if (!existingAssigned.includes(editingClassId)) {
+              return { ...u, assignedClasses: [...existingAssigned, editingClassId] };
+            }
+          }
+          return u;
+        }));
+      }
+
+      addAuditLog?.("Modification de classe", activeSchoolId, `Modification de la classe "${cleanName}" (Professeur : ${assignedTeacherName || 'Non assigné'}).`);
       showToast(`Classe "${cleanName}" modifiée avec succès.`, "success");
     } else {
       // Create new
@@ -390,17 +419,78 @@ export default function ClassManagerModule({
         level: classLevelInput,
         stream: classStreamInput,
         studentCount: 0,
-        schoolId: activeSchoolId || activeSchool?.id
+        schoolId: activeSchoolId || activeSchool?.id,
+        mainTeacherId: classTeacherIdInput || undefined,
+        mainTeacherName: assignedTeacherName
       };
       setClasses(prev => [...prev, newClass]);
-      addAuditLog?.("Création de classe", activeSchoolId, `Création de la classe "${cleanName}" (${classLevelInput}).`);
-      showToast(`Classe "${cleanName}" créée avec succès ! Vous pouvez maintenant y inscrire des élèves.`, "success");
+
+      // Synchronize teacher account's assignedClasses array if setUserAccounts exists
+      if (setUserAccounts && classTeacherIdInput) {
+        setUserAccounts(prev => prev.map(u => {
+          if (u.id === classTeacherIdInput) {
+            const existingAssigned = u.assignedClasses || [];
+            if (!existingAssigned.includes(newClassId)) {
+              return { ...u, assignedClasses: [...existingAssigned, newClassId] };
+            }
+          }
+          return u;
+        }));
+      }
+
+      addAuditLog?.("Création de classe", activeSchoolId, `Création de la classe "${cleanName}" (${classLevelInput}) avec le professeur ${assignedTeacherName || 'Non assigné'}.`);
+      showToast(`Classe "${cleanName}" créée avec succès !`, "success");
       setStudentClassId(newClassId);
     }
 
     setShowAddClassModal(false);
     setEditingClassId(null);
     setClassNameInput('');
+    setClassTeacherIdInput('');
+  };
+
+  // Quick Teacher Assignment from class card
+  const handleAssignTeacherQuick = (targetClass: SchoolClass, teacherId: string) => {
+    const assignedTeacher = registeredTeachers.find(t => t.id === teacherId);
+    const teacherName = assignedTeacher ? assignedTeacher.fullName : undefined;
+
+    setClasses(prev => prev.map(c => {
+      if (c.id === targetClass.id) {
+        return {
+          ...c,
+          mainTeacherId: teacherId || undefined,
+          mainTeacherName: teacherName
+        };
+      }
+      return c;
+    }));
+
+    // Update teacher userAccount assignedClasses if available
+    if (setUserAccounts) {
+      setUserAccounts(prev => prev.map(u => {
+        if (teacherId && u.id === teacherId) {
+          const existing = u.assignedClasses || [];
+          if (!existing.includes(targetClass.id)) {
+            return { ...u, assignedClasses: [...existing, targetClass.id] };
+          }
+        }
+        return u;
+      }));
+    }
+
+    addAuditLog?.(
+      "Attribution Enseignant", 
+      activeSchoolId, 
+      `Attribution de l'enseignant ${teacherName || 'Aucun'} à la classe "${targetClass.name}".`
+    );
+    showToast(
+      teacherName 
+        ? `Enseignant "${teacherName}" attribué avec succès à la classe ${targetClass.name}.` 
+        : `Enseignant retiré de la classe ${targetClass.name}.`, 
+      "success"
+    );
+    setAssigningTeacherClass(null);
+    setQuickTeacherSelectId('');
   };
 
   // Handle Delete Class
@@ -622,6 +712,7 @@ export default function ClassManagerModule({
             onClick={() => {
               setEditingClassId(null);
               setClassNameInput('');
+              setClassTeacherIdInput('');
               setShowAddClassModal(true);
             }}
             className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl shadow-md ring-2 ring-blue-500/20 transition-all cursor-pointer shrink-0"
@@ -768,6 +859,7 @@ export default function ClassManagerModule({
                 onClick={() => {
                   setEditingClassId(null);
                   setClassNameInput('');
+                  setClassTeacherIdInput('');
                   setShowAddClassModal(true);
                 }}
                 className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-xl shadow-md cursor-pointer transition-all"
@@ -784,6 +876,7 @@ export default function ClassManagerModule({
                 onClick={() => {
                   setEditingClassId(null);
                   setClassNameInput('');
+                  setClassTeacherIdInput('');
                   setShowAddClassModal(true);
                 }}
                 className="min-h-[220px] rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/30 hover:bg-blue-50/80 p-6 flex flex-col items-center justify-center text-center space-y-3 transition-all cursor-pointer group shadow-xs hover:shadow-sm"
@@ -796,13 +889,17 @@ export default function ClassManagerModule({
                     + Créer une Classe
                   </span>
                   <span className="text-xs text-blue-600/80">
-                    Ajouter une division pédagogique (Premier ou Second Cycle...)
+                    Ajouter une division pédagogique et assigner un enseignant
                   </span>
                 </div>
               </button>
 
               {currentSchoolClasses.map((cls) => {
                 const classStudents = students.filter(s => s.classId === cls.id);
+                // Lookup assigned teacher from registered teachers list or fallback
+                const teacherObj = registeredTeachers.find(t => t.id === cls.mainTeacherId);
+                const teacherDisplay = teacherObj ? teacherObj.fullName : (cls.mainTeacherName || null);
+
                 return (
                   <div 
                     key={cls.id}
@@ -820,12 +917,13 @@ export default function ClassManagerModule({
                         </div>
                         <div className="flex items-center space-x-1">
                           <button
-                            title="Modifier"
+                            title="Modifier la classe et l'enseignant"
                             onClick={() => {
                               setEditingClassId(cls.id);
                               setClassNameInput(cls.name);
                               setClassLevelInput(formatCycleLevel(cls.level));
                               setClassStreamInput(cls.stream || 'Général');
+                              setClassTeacherIdInput(cls.mainTeacherId || '');
                               setShowAddClassModal(true);
                             }}
                             className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 cursor-pointer"
@@ -842,8 +940,36 @@ export default function ClassManagerModule({
                         </div>
                       </div>
 
+                      {/* Head Teacher / Professeur Assigné Badge & Quick Action */}
+                      <div className="mt-3 p-2.5 bg-blue-50/70 border border-blue-100 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center space-x-2 min-w-0 pr-1">
+                          <div className={`p-1 rounded-lg shrink-0 ${teacherDisplay ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                            <UserCheck className="h-3.5 w-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 block">
+                              Professeur Assigné
+                            </span>
+                            <span className="text-xs font-semibold text-slate-800 truncate block">
+                              {teacherDisplay || <span className="text-slate-400 italic">Aucun enseignant assigné</span>}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAssigningTeacherClass(cls);
+                            setQuickTeacherSelectId(cls.mainTeacherId || '');
+                          }}
+                          className="shrink-0 px-2.5 py-1 text-[11px] font-bold text-blue-700 bg-white hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg transition-colors cursor-pointer shadow-xs"
+                          title="Attribuer ou changer le professeur"
+                        >
+                          {teacherDisplay ? 'Changer' : '+ Attribuer'}
+                        </button>
+                      </div>
+
                       {/* Enrolled Students Badge */}
-                      <div className="mt-4 flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <div className="mt-2.5 flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <div className="flex items-center space-x-2">
                           <Users className="h-4 w-4 text-slate-400" />
                           <span className="text-xs font-semibold text-slate-700">
@@ -1180,6 +1306,34 @@ export default function ClassManagerModule({
                 </div>
               </div>
 
+              {/* Attribution d'un Enseignant Enregistré */}
+              <div className="space-y-1.5 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                    <UserCheck className="h-4 w-4 text-blue-600" />
+                    <span>Enseignant attribué (Professeur Principal)</span>
+                  </label>
+                  <span className="text-[10px] text-blue-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-blue-200">
+                    {registeredTeachers.length} enseignant(s) disponible(s)
+                  </span>
+                </div>
+                <select
+                  value={classTeacherIdInput}
+                  onChange={(e) => setClassTeacherIdInput(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium cursor-pointer"
+                >
+                  <option value="">-- Aucun enseignant attribué (À définir plus tard) --</option>
+                  {registeredTeachers.map((prof) => (
+                    <option key={prof.id} value={prof.id}>
+                      {prof.fullName} ({prof.username}) - {prof.assignedClasses?.length || 0} classe(s)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-500">
+                  Sélectionnez parmi la liste des professeurs enregistrés de l'école pour lui attribuer la responsabilité de cette classe.
+                </p>
+              </div>
+
               <div className="pt-2 flex justify-end space-x-2">
                 <button
                   type="button"
@@ -1481,6 +1635,92 @@ MBOUMBA, Christian, M, +241 07 45 67 89, M. MBOUMBA Pierre`
                 >
                   <FileSpreadsheet className="h-4 w-4" />
                   <span>{isImportingCsv ? 'Importation en cours...' : 'Valider l\'importation'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ATTRIBUTION RAPIDE D'UN ENSEIGNANT À UNE CLASSE */}
+      {assigningTeacherClass && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                  <UserCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-display font-bold text-slate-900">
+                    Attribuer un Enseignant
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Classe : <strong className="text-blue-600">{assigningTeacherClass.name}</strong>
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setAssigningTeacherClass(null)}
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600 space-y-1">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-slate-500">Niveau de la classe :</span>
+                  <span className="font-bold text-slate-800">{assigningTeacherClass.level}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-slate-500">Professeur actuel :</span>
+                  <span className="font-bold text-blue-700">
+                    {assigningTeacherClass.mainTeacherName || 'Aucun (non attribué)'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Choisir parmi les professeurs enregistrés :
+                </label>
+                <select
+                  value={quickTeacherSelectId}
+                  onChange={(e) => setQuickTeacherSelectId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                >
+                  <option value="">-- Aucun enseignant (Désassigner) --</option>
+                  {registeredTeachers.map((prof) => (
+                    <option key={prof.id} value={prof.id}>
+                      {prof.fullName} ({prof.username}) - {prof.assignedClasses?.length || 0} classe(s)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-500">
+                  {registeredTeachers.length > 0 
+                    ? `${registeredTeachers.length} professeur(s) enregistré(s) dans l'établissement.`
+                    : "Aucun professeur n'est encore enregistré dans la base des utilisateurs."}
+                </p>
+              </div>
+
+              {/* Action buttons */}
+              <div className="pt-2 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setAssigningTeacherClass(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAssignTeacherQuick(assigningTeacherClass, quickTeacherSelectId)}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md cursor-pointer flex items-center space-x-1.5"
+                >
+                  <UserCheck className="h-4 w-4" />
+                  <span>Confirmer l'attribution</span>
                 </button>
               </div>
             </div>

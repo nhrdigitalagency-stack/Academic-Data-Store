@@ -96,7 +96,9 @@ export const CLASSES: SchoolClass[] = [
     level: 'Second Cycle (2nde - Tle)',
     studentCount: 35,
     schoolId: 'asi-gabon',
-    stream: 'Scientifique'
+    stream: 'Scientifique',
+    mainTeacherId: 'acc-asi-gabon-prof-math',
+    mainTeacherName: 'M. NGUEMA Marc (Professeur de Mathématiques)'
   },
   {
     id: 'cls-asi-tled',
@@ -104,7 +106,9 @@ export const CLASSES: SchoolClass[] = [
     level: 'Second Cycle (2nde - Tle)',
     studentCount: 40,
     schoolId: 'asi-gabon',
-    stream: 'Scientifique'
+    stream: 'Scientifique',
+    mainTeacherId: 'acc-asi-gabon-prof-pc',
+    mainTeacherName: 'Mme BEKALE Sylvie (Professeur de Sciences Physiques)'
   },
   {
     id: 'cls-asi-1a4',
@@ -112,7 +116,9 @@ export const CLASSES: SchoolClass[] = [
     level: 'Second Cycle (2nde - Tle)',
     studentCount: 40,
     schoolId: 'asi-gabon',
-    stream: 'Littéraire'
+    stream: 'Littéraire',
+    mainTeacherId: 'acc-asi-gabon-prof-fr',
+    mainTeacherName: 'M. OBAME Paul (Professeur de Lettres Françaises)'
   },
   {
     id: 'cls-asi-3a',
@@ -120,7 +126,9 @@ export const CLASSES: SchoolClass[] = [
     level: 'Premier Cycle (6e - 3e)',
     studentCount: 45,
     schoolId: 'asi-gabon',
-    stream: 'Général'
+    stream: 'Général',
+    mainTeacherId: 'acc-asi-gabon-prof-fr',
+    mainTeacherName: 'M. OBAME Paul (Professeur de Lettres Françaises)'
   }
 ];
 

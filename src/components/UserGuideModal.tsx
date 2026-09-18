@@ -120,7 +120,7 @@ export default function UserGuideModal({
         {
           id: 'admin-classes',
           name: 'Gestion des Cycles & Classes',
-          desc: 'Organisation académique structurée : Premier Cycle (6e, 5e, 4e, 3e) et Second Cycle (2nde, 1ère, Tle) avec affectation des professeurs principaux.',
+          desc: 'Organisation académique structurée : création des classes, attribution directe du professeur parmi les enseignants enregistrés, et inscription des élèves.',
           targetTab: 'classes',
           icon: Users
         },

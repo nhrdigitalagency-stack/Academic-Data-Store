@@ -18,6 +18,8 @@ export interface SchoolClass {
   studentCount: number;
   schoolId?: string; // for multi-tenancy
   stream?: string; // e.g. "Scientifique", "Littéraire", "Général"
+  mainTeacherId?: string; // ID of the assigned head teacher / professeur principal
+  mainTeacherName?: string; // Name of the assigned teacher for quick display
 }
 
 export interface Student {
