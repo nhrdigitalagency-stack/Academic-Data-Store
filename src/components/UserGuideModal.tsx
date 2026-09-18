@@ -24,7 +24,14 @@ import {
   ArrowRight,
   ClipboardCheck,
   Award,
-  Bell
+  Bell,
+  GraduationCap,
+  Globe,
+  CreditCard,
+  QrCode,
+  HeartHandshake,
+  BookMarked,
+  FileSpreadsheet
 } from 'lucide-react';
 
 interface UserGuideModalProps {
@@ -44,7 +51,7 @@ interface FeatureGuide {
 }
 
 interface RoleGuide {
-  id: 'superadmin' | 'admin' | 'enseignant';
+  id: 'superadmin' | 'admin' | 'enseignant' | 'parent';
   title: string;
   roleBadge: string;
   badgeClass: string;
@@ -60,7 +67,7 @@ export default function UserGuideModal({
   setCurrentTab,
   currentUserRole = 'school_admin'
 }: UserGuideModalProps) {
-  const [activeRole, setActiveRole] = useState<'superadmin' | 'admin' | 'enseignant'>('admin');
+  const [activeRole, setActiveRole] = useState<'superadmin' | 'admin' | 'enseignant' | 'parent'>('admin');
   const [searchQuery, setSearchQuery] = useState('');
 
   const guides: RoleGuide[] = useMemo(() => [
@@ -74,22 +81,22 @@ export default function UserGuideModal({
       features: [
         {
           id: 'sa-kpis',
-          name: 'Statistiques en Temps Réel',
-          desc: 'Agrégation en direct depuis Firestore : nombre d’écoles actives, effectif global d’élèves, volume d’opérations et taux de conformité des licences.',
+          name: 'Statistiques Globales & KPIs',
+          desc: 'Agrégation en direct : nombre d’écoles actives, effectif global d’élèves, volume d’opérations et licences.',
           targetTab: 'superadmin',
           icon: Compass
         },
         {
           id: 'sa-schools',
-          name: 'Gestion des Locataires (Tenants)',
-          desc: 'Création et configuration de nouveaux établissements scolaires, personnalisation des thèmes visuels (logos, couleurs, devises, années actives).',
+          name: 'Gestion Multitenant des Écoles',
+          desc: 'Création et configuration de nouveaux établissements scolaires, personnalisation des thèmes, logos, devises et années.',
           targetTab: 'superadmin',
           icon: Building2
         },
         {
           id: 'sa-architecture',
           name: 'Moniteur d’Architecture & API',
-          desc: 'Visualisation des flux de données Firebase, logs de sécurité, performance système et documentation des points de terminaison REST.',
+          desc: 'Visualisation des flux de données Firebase, logs d’audit, sécurité et documentation OpenAPI REST.',
           targetTab: 'architecture',
           icon: Database
         }
@@ -97,70 +104,171 @@ export default function UserGuideModal({
     },
     {
       id: 'admin',
-      title: 'Administrateur de l’Établissement (Censeur / Proviseur)',
-      roleBadge: 'Gestion Scolaire',
+      title: 'Administration & Direction de l’École',
+      roleBadge: 'Direction & Censeur',
       badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
-      description: 'Pilotage complet de l’école : supervision des enseignants, validation académique des bulletins, et suivi analytique de l’assiduité.',
+      description: 'Pilotage complet de l’établissement : supervision des enseignants, validation académique des bulletins, cycles et rentrée scolaire.',
       icon: ShieldCheck,
       features: [
         {
           id: 'admin-dashboard',
-          name: 'Tableau de bord de Direction',
-          desc: 'Vue d’ensemble des effectifs actifs, du taux d’assiduité moyen journalier et des saisies de notes en attente de signature numérique.',
+          name: 'Tableau de Bord de Direction',
+          desc: 'Vue d’ensemble des effectifs actifs, taux d’assiduité moyen journalier et alertes de notes en attente de visa.',
           targetTab: 'dashboard',
           icon: BookOpen
         },
         {
+          id: 'admin-classes',
+          name: 'Gestion des Cycles & Classes',
+          desc: 'Organisation académique structurée : Premier Cycle (6e, 5e, 4e, 3e) et Second Cycle (2nde, 1ère, Tle) avec affectation des professeurs principaux.',
+          targetTab: 'classes',
+          icon: Users
+        },
+        {
           id: 'admin-approvals',
-          name: 'Approbation des Évaluations',
-          desc: 'Contrôle de conformité et verrouillage des notes saisies par les enseignants pour la publication sécurisée des résultats.',
+          name: 'Workflow d’Approbation des Notes',
+          desc: 'Contrôle de conformité académique, visa et verrouillage des notes saisies par les professeurs avant publication.',
           targetTab: 'admin',
           icon: ClipboardCheck
         },
         {
           id: 'admin-bulletins',
           name: 'Calcul des Moyennes & Bulletins PDF',
-          desc: 'Génération automatique des bulletins scolaires trimestriels avec calcul des rangs, mention du conseil de classe et tampon MINESEC officiel.',
+          desc: 'Génération instantanée des bulletins scolaires trimestriels MINESEC avec calcul automatique des rangs, mentions et visa officiel.',
           targetTab: 'admin',
           icon: Award
         },
         {
+          id: 'admin-deliberations',
+          name: 'Conseils de Classe & Délibérations',
+          desc: 'Traitement des décisions de fin de trimestre ou d’année : tableau d’honneur, encouragements, avertissements et décisions de passage.',
+          targetTab: 'admin',
+          icon: FileSpreadsheet
+        },
+        {
           id: 'admin-attendance',
-          name: 'Statistiques d’Absentéisme',
-          desc: 'Analyses avancées d’assiduité par niveau de classe et alertes pour le suivi rigoureux de la discipline des élèves.',
+          name: 'Analyses d’Assiduité & Discipline',
+          desc: 'Surveillance statistique de l’absentéisme par classe, traçabilité des motifs et détection précoce du décrochage.',
           targetTab: 'admin',
           icon: Clock
+        },
+        {
+          id: 'admin-deployment',
+          name: 'Comptes & Cartes Scolaires QR',
+          desc: 'Checklist de rentrée, import/export Excel des effectifs et impression des cartes d’identité scolaires avec QR Code.',
+          targetTab: 'deployment',
+          icon: QrCode
+        },
+        {
+          id: 'admin-site',
+          name: 'Site Public & Préinscriptions Web',
+          desc: 'Gestion du portail vitrine public de l’école et traitement des demandes d’admission déposées en ligne par les familles.',
+          targetTab: 'site',
+          icon: Globe
+        },
+        {
+          id: 'admin-billing',
+          name: 'Abonnement & Crédits SMS Alerte',
+          desc: 'Suivi du forfait SaaS de l’école et rechargement des packs SMS pour notification instantanée des parents via Mobile Money.',
+          targetTab: 'billing',
+          icon: CreditCard
         }
       ]
     },
     {
       id: 'enseignant',
-      title: 'Enseignant / Personnel de l’École',
-      roleBadge: 'Activités Journalières',
+      title: 'Enseignants & Vie Scolaire',
+      roleBadge: 'Pédagogie & Assiduité',
       badgeClass: 'bg-violet-50 text-violet-700 border-violet-200',
-      description: 'Gestion pédagogique de proximité : appel numérique en classe, notation continue par séquence, et portail de communication parents-élèves.',
+      description: 'Activités quotidiennes en classe : appel numérique, création et notation des évaluations séquentielles, cahier de texte et devoirs.',
       icon: User,
       features: [
         {
           id: 'teacher-attendance',
-          name: 'Prise de Présence (Feuille d’Appel)',
-          desc: 'Remplissage rapide de la feuille de présence numérique pour chaque cours. Marquage instantané (Présent, En retard, Absent).',
+          name: 'Feuille de Présence & Appel Numérique',
+          desc: 'Pointage rapide par cours (Présent, Retard, Absent justifié/injustifié) avec déclenchement automatique d’alertes SMS aux parents.',
           targetTab: 'attendance',
           icon: CalendarDays
         },
         {
           id: 'teacher-grades',
           name: 'Saisie des Évaluations & Notes',
-          desc: 'Création d’épreuves séquentielles, attribution des coefficients, et saisie des notes avec mise à jour en temps réel des statistiques de classe.',
+          desc: 'Création d’épreuves séquentielles, application des coefficients et barèmes officiels, et verrouillage sécurisé des notes.',
           targetTab: 'grades',
           icon: FileText
         },
         {
-          id: 'teacher-portal',
-          name: 'Portail Élèves & Parents',
-          desc: 'Accès sécurisé pour chaque famille afin de consulter le bulletin, l’historique des absences, et la situation disciplinaire en direct.',
+          id: 'teacher-homework',
+          name: 'Cahier de Texte & Devoirs à la Maison',
+          desc: 'Attribution des devoirs de maison avec date limite, suivi du statut de réalisation des élèves (Fait / Non fait).',
+          targetTab: 'homework',
+          icon: BookMarked
+        },
+        {
+          id: 'teacher-library',
+          name: 'Médiathèque Numérique (E-Learning)',
+          desc: 'Partage de cours en PDF, polycopiés, devoirs corrigés et annales d’examens nationaux (BEPC, Probatoire, Baccalauréat).',
+          targetTab: 'library',
+          icon: BookOpen
+        }
+      ]
+    },
+    {
+      id: 'parent',
+      title: 'Espace Parents & Familles',
+      roleBadge: 'Suivi Familial',
+      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      description: 'Suivi en temps réel de la scolarité de vos enfants : notes, bulletins certifiés, devoirs, retards et alertes directes de l’école.',
+      icon: HeartHandshake,
+      features: [
+        {
+          id: 'parent-portal-grades',
+          name: 'Relevé des Notes & Moyennes en Direct',
+          desc: 'Consultez les notes des séquences dès leur validation, avec coefficients, rangs de classe et appréciations des enseignants.',
+          targetTab: 'portal',
+          icon: Award
+        },
+        {
+          id: 'parent-portal-bulletin',
+          name: 'Téléchargement du Bulletin Officiel PDF',
+          desc: 'Téléchargez et imprimez à domicile le bulletin scolaire trimestriel officiel muni du visa de l’établissement et du QR Code de sécurité.',
+          targetTab: 'portal',
+          icon: FileText
+        },
+        {
+          id: 'parent-portal-attendance',
+          name: 'Historique d’Assiduité & Absences',
+          desc: 'Suivi transparent des retards et absences par matière, statut de justification et notification par SMS en cas d’absence.',
+          targetTab: 'portal',
+          icon: Clock
+        },
+        {
+          id: 'parent-portal-homework',
+          name: 'Cahier de Devoirs à la Maison',
+          desc: 'Vérifiez le travail à domicile assigné à votre enfant, les dates limites de rendu et le statut de réalisation (Fait / Non fait).',
+          targetTab: 'portal',
+          icon: BookMarked
+        },
+        {
+          id: 'parent-portal-profile',
+          name: 'Mise à Jour du Contact d’Urgence',
+          desc: 'Vérifiez et modifiez votre numéro de téléphone WhatsApp/SMS pour recevoir toutes les alertes de sécurité et d’assiduité.',
           targetTab: 'portal',
           icon: Users
+        },
+        {
+          id: 'parent-portal-library',
+          name: 'Accès aux Manuels & Annales E-Learning',
+          desc: 'Votre enfant peut consulter les supports de cours, polycopiés et annales d’examens mis à disposition par ses professeurs.',
+          targetTab: 'library',
+          icon: BookOpen
+        },
+        {
+          id: 'parent-portal-site',
+          name: 'Préinscriptions & Actualités de l’École',
+          desc: 'Déposez une demande de réinscription ou préinscription pour un nouveau frère/sœur directement via le site officiel.',
+          targetTab: 'site',
+          icon: Globe
         }
       ]
     }
@@ -285,7 +393,7 @@ export default function UserGuideModal({
                     }`} />
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-bold leading-tight truncate">
-                        {guide.id === 'superadmin' ? 'Super Admin' : guide.id === 'admin' ? 'Admin École' : 'Enseignant / Portail'}
+                        {guide.id === 'superadmin' ? 'Super Admin' : guide.id === 'admin' ? 'Direction École' : guide.id === 'enseignant' ? 'Enseignants' : 'Parents & Élèves'}
                       </p>
                       <p className={`text-[9px] font-mono leading-none mt-0.5 ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
                         {!hasAccess ? '🔒 Lecture seule' : '✓ Accès direct'}
@@ -371,18 +479,18 @@ export default function UserGuideModal({
                 // Normal Role-by-Role tab view
                 <div className="space-y-6">
                   {/* Mobile header (as the sidebar is hidden on small viewports) */}
-                  <div className="sm:hidden flex space-x-1 bg-slate-100 p-1 rounded-xl mb-4">
+                  <div className="sm:hidden flex space-x-1 bg-slate-100 p-1 rounded-xl mb-4 overflow-x-auto">
                     {guides.map((g) => (
                       <button
                         key={g.id}
                         onClick={() => setActiveRole(g.id)}
-                        className={`flex-1 text-[10px] font-bold py-1.5 rounded-lg text-center transition-all ${
+                        className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-lg text-center transition-all whitespace-nowrap ${
                           activeRole === g.id 
                             ? 'bg-blue-600 text-white shadow-xs' 
                             : 'text-slate-600'
                         }`}
                       >
-                        {g.id === 'superadmin' ? 'SuperAdmin' : g.id === 'admin' ? 'Admin' : 'Enseignant'}
+                        {g.id === 'superadmin' ? 'SuperAdmin' : g.id === 'admin' ? 'Direction' : g.id === 'enseignant' ? 'Enseignants' : 'Parents'}
                       </button>
                     ))}
                   </div>
