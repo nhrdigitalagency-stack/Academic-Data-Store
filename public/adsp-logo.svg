@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Arcs for text along path -->
+    <path id="adsp-top-text-path" d="M 85 220 A 175 175 0 0 1 415 220" fill="none" />
+    <path id="adsp-bottom-text-path" d="M 130 335 A 170 170 0 0 0 370 335" fill="none" />
+    
+    <!-- Gradients -->
+    <linearGradient id="adsp-green-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#15803d" />
+    </linearGradient>
+
+    <linearGradient id="adsp-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+
+    <!-- 4-point star definition -->
+    <g id="sparkle-star-green">
+      <path d="M 0,-16 Q 0,0 16,0 Q 0,0 0,16 Q 0,0 -16,0 Q 0,0 0,-16 Z" fill="#16a34a" />
+    </g>
+    <g id="sparkle-star-blue">
+      <path d="M 0,-14 Q 0,0 14,0 Q 0,0 0,14 Q 0,0 -14,0 Q 0,0 0,-14 Z" fill="#3b82f6" />
+    </g>
+  </defs>
+
+  <!-- Top Curved Text: ACADEMIC DATA -->
+  <text font-family="'Impact', 'Arial Black', 'Montserrat', sans-serif" font-weight="900" font-size="28" fill="#15803d" letter-spacing="3">
+    <textPath href="#adsp-top-text-path" startOffset="50%" text-anchor="middle">
+      ACADEMIC DATA
+    </textPath>
+  </text>
+
+  <!-- Back portion of the planetary ring (behind the globe) -->
+  <path d="M 105 210 C 130 170, 320 160, 425 200 C 445 208, 410 220, 360 222 C 280 226, 170 230, 105 210 Z" fill="#16a34a" opacity="0.95" />
+
+  <!-- The Globe (Sphere with Graticule Grid) -->
+  <g id="globe-wireframe">
+    <!-- Globe Outer Circle -->
+    <circle cx="250" cy="245" r="130" fill="#ffffff" stroke="#15803d" stroke-width="4" />
+    
+    <!-- Longitude Meridians -->
+    <!-- Center vertical meridian -->
+    <line x1="250" y1="115" x2="250" y2="375" stroke="#16a34a" stroke-width="2.5" />
+    
+    <!-- Elliptic meridians -->
+    <ellipse cx="250" cy="245" rx="40" ry="130" fill="none" stroke="#16a34a" stroke-width="2.2" />
+    <ellipse cx="250" cy="245" rx="80" ry="130" fill="none" stroke="#16a34a" stroke-width="2.2" />
+    <ellipse cx="250" cy="245" rx="110" ry="130" fill="none" stroke="#16a34a" stroke-width="2.2" />
+
+    <!-- Latitude Parallels -->
+    <!-- Equator -->
+    <line x1="120" y1="245" x2="380" y2="245" stroke="#16a34a" stroke-width="2.5" />
+
+    <!-- Northern latitudes -->
+    <path d="M 133 205 C 160 215, 340 215, 367 205" fill="none" stroke="#16a34a" stroke-width="2" />
+    <path d="M 158 165 C 185 175, 315 175, 342 165" fill="none" stroke="#16a34a" stroke-width="2" />
+    <path d="M 195 135 C 215 142, 285 142, 305 135" fill="none" stroke="#16a34a" stroke-width="2" />
+
+    <!-- Southern latitudes -->
+    <path d="M 133 285 C 160 275, 340 275, 367 285" fill="none" stroke="#16a34a" stroke-width="2" />
+    <path d="M 158 325 C 185 315, 315 315, 342 325" fill="none" stroke="#16a34a" stroke-width="2" />
+    <path d="M 195 355 C 215 348, 285 348, 305 355" fill="none" stroke="#16a34a" stroke-width="2" />
+  </g>
+
+  <!-- Front portion of the Planetary Orbital Ring (swooping across the front) -->
+  <g id="orbital-ring-front">
+    <path d="M 45 235 C 30 220, 60 200, 150 205 C 240 210, 420 250, 460 270 C 475 278, 450 295, 380 295 C 260 295, 80 260, 45 235 Z" fill="#16a34a" />
+    <!-- Tapered tail swoosh accents -->
+    <path d="M 270 293 L 420 286 C 445 284, 455 278, 450 274 C 410 260, 290 235, 200 225 L 200 230 C 275 240, 390 265, 410 275 C 390 280, 330 288, 270 293 Z" fill="#22c55e" opacity="0.7" />
+  </g>
+
+  <!-- Central ADSP Bold Letters -->
+  <g id="adsp-letters" transform="translate(250, 252)">
+    <!-- White background knockout / shadow for crystal clarity over grid lines -->
+    <text x="0" y="0" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-weight="900" 
+          font-size="62" 
+          fill="#ffffff" 
+          stroke="#ffffff" 
+          stroke-width="12" 
+          stroke-linejoin="round"
+          text-anchor="middle" 
+          dominant-baseline="central"
+          letter-spacing="2">
+      ADSP
+    </text>
+    
+    <!-- Main Green Text -->
+    <text x="0" y="0" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-weight="900" 
+          font-size="62" 
+          fill="#15803d" 
+          stroke="#166534" 
+          stroke-width="2" 
+          stroke-linejoin="round"
+          text-anchor="middle" 
+          dominant-baseline="central"
+          letter-spacing="2">
+      ADSP
+    </text>
+  </g>
+
+  <!-- Sparkle Stars -->
+  <!-- Top Right Blue Star -->
+  <use href="#sparkle-star-blue" x="408" y="165" />
+  <!-- Bottom Left Blue Star -->
+  <use href="#sparkle-star-blue" x="105" y="305" />
+  <!-- Ring Green Star (Right) -->
+  <use href="#sparkle-star-green" x="368" y="180" transform="scale(0.85) translate(65, 20)" />
+  <!-- Ring Green Star (Left) -->
+  <use href="#sparkle-star-green" x="140" y="285" />
+
+  <!-- Bottom Curved Text: STORE PROJECT -->
+  <text font-family="'Impact', 'Arial Black', 'Montserrat', sans-serif" font-weight="900" font-size="28" fill="#15803d" letter-spacing="3">
+    <textPath href="#adsp-bottom-text-path" startOffset="50%" text-anchor="middle">
+      STORE PROJECT
+    </textPath>
+  </text>
+</svg>

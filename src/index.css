@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #e0f0fe;
+  --color-brand-200: #bae3fd;
+  --color-brand-300: #7dd4fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+  --color-brand-950: #082f49;
+
+  --color-primary-50: var(--dynamic-primary-50, #eff6ff);
+  --color-primary-100: var(--dynamic-primary-100, #dbeafe);
+  --color-primary-200: var(--dynamic-primary-200, #bfdbfe);
+  --color-primary-300: var(--dynamic-primary-300, #93c5fd);
+  --color-primary-400: var(--dynamic-primary-400, #60a5fa);
+  --color-primary-500: var(--dynamic-primary-500, #3b82f6);
+  --color-primary-600: var(--dynamic-primary-600, #2563eb);
+  --color-primary-700: var(--dynamic-primary-700, #1d4ed8);
+  --color-primary-800: var(--dynamic-primary-800, #1e40af);
+  --color-primary-900: var(--dynamic-primary-900, #1e3a8a);
+  --color-primary-950: var(--dynamic-primary-950, #172554);
+
+  --color-secondary-50: var(--dynamic-secondary-50, #f8fafc);
+  --color-secondary-100: var(--dynamic-secondary-100, #f1f5f9);
+  --color-secondary-200: var(--dynamic-secondary-200, #e2e8f0);
+  --color-secondary-300: var(--dynamic-secondary-300, #cbd5e1);
+  --color-secondary-400: var(--dynamic-secondary-400, #94a3b8);
+  --color-secondary-500: var(--dynamic-secondary-500, #64748b);
+  --color-secondary-600: var(--dynamic-secondary-600, #475569);
+  --color-secondary-700: var(--dynamic-secondary-700, #334155);
+  --color-secondary-800: var(--dynamic-secondary-800, #1e293b);
+  --color-secondary-900: var(--dynamic-secondary-900, #0f172a);
+  --color-secondary-950: var(--dynamic-secondary-950, #020617);
+
+  --color-accent-50: var(--dynamic-accent-50, #fffbeb);
+  --color-accent-100: var(--dynamic-accent-100, #fef3c7);
+  --color-accent-200: var(--dynamic-accent-200, #fde68a);
+  --color-accent-300: var(--dynamic-accent-300, #fcd34d);
+  --color-accent-400: var(--dynamic-accent-400, #fbbf24);
+  --color-accent-500: var(--dynamic-accent-500, #f59e0b);
+  --color-accent-600: var(--dynamic-accent-600, #d97706);
+  --color-accent-700: var(--dynamic-accent-700, #b45309);
+  --color-accent-800: var(--dynamic-accent-800, #92400e);
+  --color-accent-900: var(--dynamic-accent-900, #78350f);
+  --color-accent-950: var(--dynamic-accent-950, #451a03);
+}
+
+@layer utilities {
+  /* Scrollbar styles */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+

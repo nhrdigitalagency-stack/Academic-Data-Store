@@ -1,0 +1,240 @@
+{
+  "entities": {
+    "schools": {
+      "title": "SchoolTenant",
+      "description": "Information et configuration de l'établissement scolaire",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slogan": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "licenseStatus": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "students": {
+      "title": "Student",
+      "description": "Information sur l'élève",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "classId": { "type": "string" }
+      },
+      "required": ["id", "schoolId"]
+    },
+    "classes": {
+      "title": "SchoolClass",
+      "description": "Division ou classe scolaire",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "schoolId": { "type": "string" }
+      },
+      "required": ["id", "name", "schoolId"]
+    },
+    "sheets": {
+      "title": "AttendanceSheet",
+      "description": "Feuille d'appel de présence",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "classId": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "classId", "date"]
+    },
+    "records": {
+      "title": "AttendanceRecord",
+      "description": "Enregistrement de présence d'un élève",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sheetId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "sheetId", "studentId", "status"]
+    },
+    "evaluations": {
+      "title": "Evaluation",
+      "description": "Épreuve d'évaluation de notes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "classId": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "classId", "status"]
+    },
+    "marks": {
+      "title": "Mark",
+      "description": "Note d'un élève à une évaluation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "evaluationId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "value": { "type": "number" }
+      },
+      "required": ["id", "evaluationId", "studentId", "value"]
+    },
+    "siteConfigs": {
+      "title": "SchoolPublicSiteConfig",
+      "description": "Configuration du site web public de l'établissement",
+      "type": "object",
+      "properties": {
+        "schoolId": { "type": "string" },
+        "heroTitle": { "type": "string" }
+      },
+      "required": ["schoolId"]
+    },
+    "sections": {
+      "title": "SchoolSection",
+      "description": "Filière ou section d'enseignement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "admissionConfigs": {
+      "title": "SchoolAdmissionConfig",
+      "description": "Procédure d'admission et pré-inscription",
+      "type": "object",
+      "properties": {
+        "schoolId": { "type": "string" },
+        "isAdmissionOpen": { "type": "boolean" }
+      },
+      "required": ["schoolId"]
+    },
+    "articles": {
+      "title": "SchoolArticle",
+      "description": "Actualité ou annonce de l'école",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "title"]
+    },
+    "examResults": {
+      "title": "ExamResultPublication",
+      "description": "Palmarès officiel d'examens",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "examType": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "examType"]
+    },
+    "preRegistrations": {
+      "title": "PreRegistrationSubmission",
+      "description": "Dossier de pré-inscription en ligne",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "candidateLastName": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "candidateLastName"]
+    },
+    "libraryResources": {
+      "title": "LibraryResource",
+      "description": "Ressource numérique pédagogique",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "title"]
+    },
+    "userAccounts": {
+      "title": "SchoolUserAccount",
+      "description": "Compte utilisateur de l'établissement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "username": { "type": "string" }
+      },
+      "required": ["id", "schoolId", "username"]
+    },
+    "onboardingSteps": {
+      "title": "OnboardingStep",
+      "description": "Étape de déploiement et checklist",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "completed": { "type": "boolean" }
+      },
+      "required": ["id", "title"]
+    },
+    "subscriptions": {
+      "title": "SchoolSubscription",
+      "description": "Abonnement SaaS et facturation",
+      "type": "object",
+      "properties": {
+        "schoolId": { "type": "string" },
+        "planType": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["schoolId", "planType", "status"]
+    },
+    "auditLogs": {
+      "title": "AuditLog",
+      "description": "Journal d'audit de sécurité",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "action", "timestamp"]
+    },
+    "homeworks": {
+      "title": "Homework",
+      "description": "Cahier de textes et devoirs de maison avec suivi des rendus",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "classId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "title": { "type": "string" },
+        "dueDate": { "type": "string" }
+      },
+      "required": ["id", "classId", "subjectId", "title", "dueDate"]
+    }
+  },
+  "firestore": {
+    "schools": { "schema": "schools", "description": "Collection des établissements" },
+    "students": { "schema": "students", "description": "Collection des élèves" },
+    "classes": { "schema": "classes", "description": "Collection des classes" },
+    "sheets": { "schema": "sheets", "description": "Collection des feuilles d'appel" },
+    "records": { "schema": "records", "description": "Collection des enregistrements de présence" },
+    "evaluations": { "schema": "evaluations", "description": "Collection des évaluations" },
+    "marks": { "schema": "marks", "description": "Collection des notes" },
+    "siteConfigs": { "schema": "siteConfigs", "description": "Collection des configurations de site" },
+    "sections": { "schema": "sections", "description": "Collection des filières et sections" },
+    "admissionConfigs": { "schema": "admissionConfigs", "description": "Collection des paramètres d'admission" },
+    "articles": { "schema": "articles", "description": "Collection des articles et actualités" },
+    "examResults": { "schema": "examResults", "description": "Collection des résultats d'examens" },
+    "preRegistrations": { "schema": "preRegistrations", "description": "Collection des pré-inscriptions" },
+    "libraryResources": { "schema": "libraryResources", "description": "Collection de la bibliothèque numérique" },
+    "userAccounts": { "schema": "userAccounts", "description": "Collection des comptes utilisateurs" },
+    "onboardingSteps": { "schema": "onboardingSteps", "description": "Collection des étapes d'onboarding" },
+    "subscriptions": { "schema": "subscriptions", "description": "Collection des abonnements et factures" },
+    "auditLogs": { "schema": "auditLogs", "description": "Collection des journaux d'audit" },
+    "homeworks": { "schema": "homeworks", "description": "Collection des devoirs de maison et cahiers de textes" }
+  }
+}

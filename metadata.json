@@ -1,0 +1,6 @@
+{
+  "name": "ADS STORE",
+  "description": "ADSP (Academic Data Store Project) - Système de gestion scolaire pour le Cameroun - Suivi et historisation des présences et des notes d'évaluations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
